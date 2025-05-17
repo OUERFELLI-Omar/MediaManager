@@ -1,6 +1,7 @@
 package main;
 
 import interfaces.emprunterInterface;
+import interfaces.reserverInterface;
 import models.*;
 import database.MediaDAO;
 import java.time.Year;
@@ -23,7 +24,9 @@ public class Main {
             System.out.println("5. Supprimer un média");
             System.out.println("6. Emprunter un média");
             System.out.println("7. Retourner un média");
-            System.out.println("8. Quitter");
+            System.out.println("8. Réserver un média");
+            System.out.println("9. Annuler une réservation");
+            System.out.println("10. Quitter");
             System.out.print("Choix : ");
 
             int choice = scanner.nextInt();
@@ -53,6 +56,13 @@ public class Main {
                         returnMedia();
                         break;
                     case 8:
+                        reserveMedia();
+                        break;
+                    case 9:
+                        cancelReservation();
+                        break;
+
+                    case 10:
                         running = false;
                         break;
                     default:
@@ -87,7 +97,7 @@ public class Main {
         scanner.nextLine();
 
         switch (typeChoice) {
-            case 1: // Livre
+            case 1:
                 System.out.print("Auteur : ");
                 String author = scanner.nextLine();
 
@@ -103,7 +113,7 @@ public class Main {
                 System.out.println("Livre ajouté avec succès.");
                 break;
 
-            case 2: // DVD
+            case 2:
                 System.out.print("Réalisateur : ");
                 String director = scanner.nextLine();
 
@@ -116,7 +126,7 @@ public class Main {
                 System.out.println("DVD ajouté avec succès.");
                 break;
 
-            case 3: // Magazine
+            case 3:
                 System.out.print("Éditeur : ");
                 String publisher = scanner.nextLine();
 
@@ -229,6 +239,36 @@ public class Main {
             mediaDAO.updateMedia(media);
         } else {
             System.out.println("Ce type de média n'est pas empruntable.");
+        }
+    }
+    private static void reserveMedia() throws Exception {
+        System.out.print("ID du média à réserver : ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Media media = mediaDAO.getMediaById(id);
+
+        if (media instanceof reserverInterface) {
+            ((reserverInterface) media).reserve();
+            mediaDAO.updateMedia(media);
+            System.out.println("Réservation confirmée !");
+        } else {
+            System.out.println("Ce média n'est pas réservable.");
+        }
+    }
+    private static void cancelReservation() throws Exception {
+        System.out.print("ID du média à annuler : ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Media media = mediaDAO.getMediaById(id);
+
+        if (media instanceof reserverInterface) {
+            ((reserverInterface) media).cancelReservation();
+            mediaDAO.updateMedia(media);
+            System.out.println("Réservation annulée !");
+        } else {
+            System.out.println("Ce média n'est pas réservable.");
         }
     }
 }

@@ -14,7 +14,6 @@ public class Magazine extends Media {
         this.issueNumber = issueNumber;
     }
 
-    // Getters et setters
     public String getPublisher() { return publisher; }
     public void setPublisher(String publisher) { this.publisher = publisher; }
 

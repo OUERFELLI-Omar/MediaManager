@@ -25,34 +25,55 @@ public class Book extends Media implements emprunterInterface, reserverInterface
 
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
-
     @Override
     public void displayInfo() {
-        System.out.println("Book: " + getTitle() + " by " + author + " (" + getPublicationYear() + ")");
+        System.out.printf("Livre: %s par %s (%d)%nISBN: %s%nStatut: %s%n",
+                getTitle(), author, getPublicationYear().getValue(),
+                isbn, getStatus());
     }
+
     @Override
     public void borrow() {
-        if (isAvailable()) {
-            setAvailable(false);
-            System.out.println("Book " + getTitle() + " has been borrowed.");
-        } else {
-            System.out.println("Book " + getTitle() + " is not available.");
+        if (!isAvailable()) {
+            System.out.println("Erreur: Le livre est déjà emprunté.");
+            return;
         }
+        if (isReserved()) {
+            System.out.println("Erreur: Le livre est réservé pour un autre utilisateur.");
+            return;
+        }
+        setAvailable(false);
+        System.out.printf("Emprunt confirmé : %s%n", getTitle());
     }
 
     @Override
     public void returnItem() {
         setAvailable(true);
-        System.out.println("Book " + getTitle() + " has been returned.");
+        setReserved(false);
+        System.out.printf("Livre retourné : %s%n", getTitle());
     }
 
     @Override
     public void reserve() {
-        System.out.println("Book " + getTitle() + " has been reserved.");
+        if (isReserved()) {
+            System.out.println("Erreur: Réservation déjà active.");
+            return;
+        }
+        if (!isAvailable()) {
+            System.out.println("Erreur: Le livre est actuellement emprunté.");
+            return;
+        }
+        setReserved(true);
+        System.out.printf("Réservation confirmée pour : %s%n", getTitle());
     }
 
     @Override
     public void cancelReservation() {
-        System.out.println("Reservation for book " + getTitle() + " has been canceled.");
+        if (!isReserved()) {
+            System.out.println("Aucune réservation active.");
+            return;
+        }
+        setReserved(false);
+        System.out.printf("Réservation annulée pour : %s%n", getTitle());
     }
 }
